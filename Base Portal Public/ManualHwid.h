@@ -1,0 +1,359 @@
+void CeksecuritiedHWIDD(char *hwidd0
+						,char *hwidd1
+						,char *hwidd2
+						,char *hwidd3
+						,char *hwidd4
+						,char *hwidd5
+						,char *hwidd6
+						,char *hwidd7
+						,char *hwidd8
+						,char *hwidd9
+						,char *hwidd10
+						,char *hwidd11
+						,char *hwidd12
+						,char *hwidd13
+						,char *hwidd14
+						,char *hwidd15
+						,char *hwidd16
+						,char *hwidd17
+						,char *hwidd18
+						,char *hwidd19
+						,char *hwidd20
+						,char *hwidd21
+						,char *hwidd22
+						,char *hwidd23
+						,char *hwidd24
+						,char *hwidd25
+						,char *hwidd26
+						,char *hwidd27
+						,char *hwidd28
+						,char *hwidd29
+						,char *hwidd30
+						,char *hwidd31
+						,char *hwidd32
+						,char *hwidd33
+						,char *hwidd34
+						,char *hwidd35
+						,char *hwidd36
+						,char *hwidd37
+						,char *hwidd38
+						,char *hwidd39
+						,char *hwidd40
+						,char *hwidd41
+						,char *hwidd42
+						,char *hwidd43
+						,char *hwidd44
+						,char *hwidd45
+						,char *hwidd46
+						,char *hwidd47
+						,char *hwidd48
+						,char *hwidd49
+						,char *hwidd50
+						,char *hwidd51
+						,char *hwidd52
+						,char *hwidd53
+						,char *hwidd54
+						,char *hwidd55
+						,char *hwidd56
+						,char *hwidd57
+						,char *hwidd58
+						,char *hwidd59
+						,char *hwidd60
+						,char *hwidd61
+						,char *hwidd62
+						,char *hwidd63
+						,char *hwidd64
+						,char *hwidd65
+						,char *hwidd66
+						,char *hwidd67
+						,char *hwidd68
+						,char *hwidd69
+						,char *hwidd70
+						,char *hwidd71
+						,char *hwidd72
+						,char *hwidd73
+						,char *hwidd74
+						,char *hwidd75
+						,char *hwidd76
+						,char *hwidd77
+						,char *hwidd78
+						,char *hwidd79
+						,char *hwidd80
+						,char *hwidd81
+						,char *hwidd82
+						,char *hwidd83
+						,char *hwidd84
+						,char *hwidd85
+						,char *hwidd86
+						,char *hwidd87
+						,char *hwidd88
+						,char *hwidd89
+						,char *hwidd90
+						,char *hwidd91
+						,char *hwidd92
+						,char *hwidd93
+						,char *hwidd94
+						,char *hwidd95
+						,char *hwidd96
+						,char *hwidd97
+						,char *hwidd98
+						,char *hwidd99
+						,char *hwidd100
+						,char *hwidd101
+						,char *hwidd102
+						,char *hwidd103
+						,char *hwidd104
+						,char *hwidd105
+						,char *hwidd106
+						,char *hwidd107
+						,char *hwidd108
+						,char *hwidd109
+						,char *hwidd110) {// iki manual
+	// deklarasi DiskInfo, parameter 0, adalah HDD 1
+	DiskInfo *di;
+	di = new DiskInfo(0);
+	// ambil serial
+	di->LoadDiskInfo();
+/*
+	// validasi make char*
+	char* sn = di->SerialNumber();
+	MessageBox(0, sn, "SERIAL", MB_OK | MB_ICONINFORMATION);
+	// validasi hwid pake strcmp, cek kalo hwid = 5WS2B681
+	if (strcmp(sn, "5WS2B681")==0) {
+		MessageBox(0, "OK. Anda bukan PKL", "Cek HWID 1", MB_OK | MB_ICONINFORMATION);
+	} else {
+		MessageBox(0, "WOW. Anda PKL ya?", "Cek HWID 1", MB_OK | MB_ICONERROR);
+	}
+*/
+	// validasi make std::string
+	string strSerial1 = di->SerialNumber();
+	string strSerial2 = trim(strSerial1);
+//	char s[190];
+//	sprintf(s, serialc, strSerial1.c_str(), strSerial2.c_str());//6RY4RF9B
+//	sprintf(s, XStr( /*SERIAL ASLI: [%s]\nSERIAL TRIM: [%s]*/ 0x09, 0x24, 0x8C, 0xDFC8DCC6, 0xD1DDB2D2, 0xC7D9DFAD, 0xB8C2BFE8, 0xC1C1F0CC, 0xE5F3EBE2, 0xE885F2F5, 0xE1E4908B, 0xF788DDF2 ).c(), strSerial1.c_str(), strSerial2.c_str());//6RY4RF9B
+
+	//-----------------------------wew------------------//
+	if (strcmp(strSerial2.c_str(), hwidd0)==0//
+	||strcmp(strSerial2.c_str(), hwidd1)==0
+	||strcmp(strSerial2.c_str(), hwidd2)==0
+	||strcmp(strSerial2.c_str(), hwidd3)==0
+	||strcmp(strSerial2.c_str(), hwidd4)==0
+	||strcmp(strSerial2.c_str(), hwidd5)==0
+	||strcmp(strSerial2.c_str(), hwidd6)==0
+	||strcmp(strSerial2.c_str(), hwidd7)==0
+	||strcmp(strSerial2.c_str(), hwidd8)==0
+	||strcmp(strSerial2.c_str(), hwidd9)==0
+	||strcmp(strSerial2.c_str(), hwidd10)==0
+	||strcmp(strSerial2.c_str(), hwidd11)==0
+	||strcmp(strSerial2.c_str(), hwidd12)==0
+	||strcmp(strSerial2.c_str(), hwidd13)==0
+	||strcmp(strSerial2.c_str(), hwidd14)==0
+	||strcmp(strSerial2.c_str(), hwidd15)==0
+	||strcmp(strSerial2.c_str(), hwidd16)==0
+	||strcmp(strSerial2.c_str(), hwidd17)==0
+	||strcmp(strSerial2.c_str(), hwidd18)==0
+	||strcmp(strSerial2.c_str(), hwidd19)==0
+	||strcmp(strSerial2.c_str(), hwidd20)==0
+	||strcmp(strSerial2.c_str(), hwidd21)==0
+	||strcmp(strSerial2.c_str(), hwidd22)==0
+	||strcmp(strSerial2.c_str(), hwidd23)==0
+	||strcmp(strSerial2.c_str(), hwidd24)==0
+	||strcmp(strSerial2.c_str(), hwidd25)==0
+	||strcmp(strSerial2.c_str(), hwidd26)==0
+	||strcmp(strSerial2.c_str(), hwidd27)==0
+	||strcmp(strSerial2.c_str(), hwidd28)==0
+	||strcmp(strSerial2.c_str(), hwidd29)==0
+	||strcmp(strSerial2.c_str(), hwidd30)==0
+	||strcmp(strSerial2.c_str(), hwidd31)==0
+	||strcmp(strSerial2.c_str(), hwidd32)==0
+	||strcmp(strSerial2.c_str(), hwidd33)==0
+	||strcmp(strSerial2.c_str(), hwidd34)==0
+	||strcmp(strSerial2.c_str(), hwidd35)==0
+	||strcmp(strSerial2.c_str(), hwidd36)==0
+	||strcmp(strSerial2.c_str(), hwidd37)==0
+	||strcmp(strSerial2.c_str(), hwidd38)==0
+	||strcmp(strSerial2.c_str(), hwidd39)==0
+	||strcmp(strSerial2.c_str(), hwidd40)==0
+	||strcmp(strSerial2.c_str(), hwidd41)==0
+	||strcmp(strSerial2.c_str(), hwidd42)==0
+	||strcmp(strSerial2.c_str(), hwidd43)==0
+	||strcmp(strSerial2.c_str(), hwidd44)==0
+	||strcmp(strSerial2.c_str(), hwidd45)==0
+	||strcmp(strSerial2.c_str(), hwidd46)==0
+	||strcmp(strSerial2.c_str(), hwidd47)==0
+	||strcmp(strSerial2.c_str(), hwidd48)==0
+	||strcmp(strSerial2.c_str(), hwidd49)==0
+	||strcmp(strSerial2.c_str(), hwidd50)==0
+	||strcmp(strSerial2.c_str(), hwidd51)==0
+	||strcmp(strSerial2.c_str(), hwidd52)==0
+	||strcmp(strSerial2.c_str(), hwidd53)==0
+	||strcmp(strSerial2.c_str(), hwidd54)==0
+	||strcmp(strSerial2.c_str(), hwidd55)==0
+	||strcmp(strSerial2.c_str(), hwidd56)==0
+	||strcmp(strSerial2.c_str(), hwidd57)==0
+	||strcmp(strSerial2.c_str(), hwidd58)==0
+	||strcmp(strSerial2.c_str(), hwidd59)==0
+	||strcmp(strSerial2.c_str(), hwidd60)==0
+	||strcmp(strSerial2.c_str(), hwidd61)==0
+	||strcmp(strSerial2.c_str(), hwidd62)==0
+	||strcmp(strSerial2.c_str(), hwidd63)==0
+	||strcmp(strSerial2.c_str(), hwidd64)==0
+	||strcmp(strSerial2.c_str(), hwidd65)==0
+	||strcmp(strSerial2.c_str(), hwidd66)==0
+	||strcmp(strSerial2.c_str(), hwidd67)==0
+	||strcmp(strSerial2.c_str(), hwidd68)==0
+	||strcmp(strSerial2.c_str(), hwidd69)==0
+	||strcmp(strSerial2.c_str(), hwidd70)==0
+	||strcmp(strSerial2.c_str(), hwidd71)==0
+	||strcmp(strSerial2.c_str(), hwidd72)==0
+	||strcmp(strSerial2.c_str(), hwidd73)==0
+	||strcmp(strSerial2.c_str(), hwidd74)==0
+	||strcmp(strSerial2.c_str(), hwidd75)==0
+	||strcmp(strSerial2.c_str(), hwidd76)==0
+	||strcmp(strSerial2.c_str(), hwidd77)==0
+	||strcmp(strSerial2.c_str(), hwidd78)==0
+	||strcmp(strSerial2.c_str(), hwidd79)==0
+	||strcmp(strSerial2.c_str(), hwidd80)==0
+	||strcmp(strSerial2.c_str(), hwidd81)==0
+	||strcmp(strSerial2.c_str(), hwidd82)==0
+	||strcmp(strSerial2.c_str(), hwidd83)==0
+	||strcmp(strSerial2.c_str(), hwidd84)==0
+	||strcmp(strSerial2.c_str(), hwidd85)==0
+	||strcmp(strSerial2.c_str(), hwidd86)==0
+	||strcmp(strSerial2.c_str(), hwidd87)==0
+	||strcmp(strSerial2.c_str(), hwidd88)==0
+	||strcmp(strSerial2.c_str(), hwidd89)==0
+	||strcmp(strSerial2.c_str(), hwidd90)==0
+	||strcmp(strSerial2.c_str(), hwidd91)==0
+	||strcmp(strSerial2.c_str(), hwidd92)==0
+	||strcmp(strSerial2.c_str(), hwidd93)==0
+	||strcmp(strSerial2.c_str(), hwidd94)==0
+	||strcmp(strSerial2.c_str(), hwidd95)==0
+	||strcmp(strSerial2.c_str(), hwidd96)==0
+	||strcmp(strSerial2.c_str(), hwidd97)==0
+	||strcmp(strSerial2.c_str(), hwidd98)==0
+	||strcmp(strSerial2.c_str(), hwidd99)==0
+	||strcmp(strSerial2.c_str(), hwidd100)==0
+	//-------------------------------------------------//
+	){
+//	switcher=true;
+	}else{
+	ExitProcess (0);
+	ExitProcess (1);
+	}
+}
+
+void CekSerialHwid()
+{
+	CeksecuritiedHWIDD("W3T451HZ" // admin
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" // 
+				   ,"DEHCOK22" // 
+				   ,"DEHCOK22" // 
+				   ,"DEHCOK22" // 
+				   ,"DEHCOK22" // 
+				   ,"DEHCOK22" // 
+				   ,"DEHCOK22" // 
+				   ,"DEHCOK22" // 
+				   ,"DEHCOK22" // 
+				   ,"WD-DEHCOK22" // 
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" // 
+				   ,"DEHCOK22" //
+				   ,"WD-DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"WD-DEHCOK22" //
+				   ,"WD-DEHCOK22" // 
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"WD-DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"WD-DEHCOK22" // 
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"WD-DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"WD-DEHCOksfs232" //
+				   ,"DEHCOksfs232" //
+				   ,"WD-DEHCOksfs232" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOksfs232" //
+				   ,"DEHCOksfs232" //
+				   ,"DEHCOksfs232" //
+				   ,"DEHCOksfs232" //
+				   ,"DEHCOK22" //
+				   ,"HHH34344" //
+				   ,"HH45" //
+				   ,"PPO55" //
+				   ,"FFFF666" //
+				   ,"FFFF666" //
+				   ,"DEHCOK22" //
+				   ,"FFFF666" //
+				   ,"FFF5454" //
+				   ,"FFF545DD4" //
+				   ,"FFF545DD4" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"DEHCOK22" //
+				   ,"HHHH35434" //
+				   ,"FFF6636463" //
+				   ,"IKIII3535" //
+				   ,"HHHH35434" //
+				   ,"566DSS" // 
+				   ,"HHH3343" //
+				   ,"JJJ54454" //
+				   ,"HHHH423424" //
+				   ,"HHH7567" //
+				   ,"JJJJJ353" //
+				   ,"566DSS" // 
+				   ,"566DSS" // 
+				   ,"566DSS" //
+				   ,"5665SS" //
+				   ,"5665SS"); //
+}

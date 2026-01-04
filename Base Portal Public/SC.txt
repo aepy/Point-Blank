@@ -1,0 +1,249 @@
+
+/*--------------------------------- Declaration Wallhack Kaca --------------------------------------------*/
+/*if(GetBattleState()){
+if(WHRobot==1)
+{   
+	if(allp)   
+	{            
+		pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+		oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+	}
+}}
+
+/*--------------------------------- Declaration Wallhack Champ --------------------------------------------*/
+/*if(GetBattleState()){
+if(Chams==1)
+{
+	if(cTeroH)
+	{
+		pDevice->SetRenderState(D3DRS_ZENABLE, false);
+		pDevice->SetRenderState(D3DRS_LIGHTING, D3DLIGHT_DIRECTIONAL);
+		pDevice->SetTexture(0, RainbowTextTestX);
+		oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount); 
+		pDevice->SetRenderState(D3DRS_ZENABLE, true);
+		pDevice->SetRenderState(D3DRS_LIGHTING, D3DLIGHT_DIRECTIONAL);
+		pDevice->SetTexture(0, RainbowTextTestX);
+	}
+	
+	if(cPoliceH)
+	{
+		pDevice->SetRenderState(D3DRS_ZENABLE, false);
+		pDevice->SetRenderState(D3DRS_LIGHTING, D3DLIGHT_DIRECTIONAL);
+		pDevice->SetTexture(0, RainbowTextTestX);
+		oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount); 
+		pDevice->SetRenderState(D3DRS_ZENABLE, true);
+		pDevice->SetRenderState(D3DRS_LIGHTING, D3DLIGHT_DIRECTIONAL);
+		pDevice->SetTexture(0, RainbowTextTestX);
+	}
+}}//*/
+
+
+
+/*---------------------------------------- Declaration Anti Vote Kick ----------------------------------------------------*
+DWORD PTR_Caller,BaseECX,CallBasePB,Definition,ReDefinition,ReadProcASM, StartRouneAmmo= NULL;
+void FloodKickPlayer(int IndexPlayer) {
+Sleep(100);
+if(Keprox == false){
+CallBasePB = (DWORD)GetModuleHandle("Pointblank.exe");
+PTR_Caller = (DWORD)(CallBasePB + ResultVote);
+BaseECX = *(DWORD*)(CallBasePB + ResultBasePlayer);
+BYTE pKick[15];
+*(BYTE*)(pKick) = IndexPlayer;
+Definition = (DWORD)pKick;
+ReDefinition = (DWORD)pKick + 0x4;
+Sleep(5);
+__asm
+{
+push 0x01
+push 0x01
+push 0x01
+push [ReDefinition]
+push [Definition]
+push 0x9E
+mov ecx,[BaseECX]
+call [PTR_Caller]
+}
+Sleep(100);
+Keprox = true;
+}
+}
+/*---------------------------------------- Declaration Hacks Auto Vote ----------------------------------------------------*
+DWORD WINAPI AutoVK()
+{
+while(1)
+{
+if(AntiVote == 1)
+{
+Sleep(100);
+Keprox = false;
+if(*(PBYTE)ResultBaseAmmo2 > NULL){
+Sleep(5);
+for (int i = 0; i<=15; i++){
+int MySlot = GetMyCharaIndex(); 
+if( i == MySlot)continue; 
+FloodKickPlayer(i);
+}}}
+Sleep(100);
+}
+return 0;
+}
+				//if(ADDXW2S(pDevice,Player,PlayerScaled))
+				//{
+				//	if (pHealth->CurHP > 1)
+				//	{
+				//		/*---------------------------- Declaration Esp Health ----------------------------------------*/
+				//		if (ESPHealth)
+				//		{
+				//			HealthBar(pDevice,(float)PlayerScaled.x-25,(float)PlayerScaled.y+5,pHealth->CurHP);
+				//		}
+				//	}
+				//}
+				
+				
+/*---------------------------------------- Declaration AutoHeadShoot ----------------------------------------------------
+void DoAutoHSNoSyarat(LPDIRECT3DDEVICE9 pDevice)
+{
+
+}
+
+/*---------------------------------------- Declaration AutoBody ----------------------------------------------------*
+void DoAutoBody(LPDIRECT3DDEVICE9 pDevice)
+{
+
+}
+					/*if(RainbowTexts!=100)
+					{RainbowR-=2,RainbowG-=3,RainbowB-=3;}
+					if(RainbowTexts!=255)
+					{RainbowR+=2,RainbowG+=3,RainbowB+=4;}*/
+
+
+/*---------------------------------------- Declaration CallAimBot ----------------------------------------------------*/
+void Thread_Aimbot()
+{
+	MakePTR((PBYTE)ResultDeltaX,(DWORD)Aim_DeltaX);
+	MakePTR((PBYTE)ResultDeltaY,(DWORD)Aim_DeltaY);
+}
+
+
+/*---------------------------------------- Declaration AimBot ----------------------------------------------------*/
+void DoAimBot(LPDIRECT3DDEVICE9 pDevice)
+{
+	unsigned long dwBase	= *(DWORD*)(ResultBasePlayer2);
+	int ScreenCenterX = (g_ViewPort.Width /2.0f);
+	int ScreenCenterY = (g_ViewPort.Height /2.0f);
+		if(AimHead)
+		{
+			int AimSlot = AutomaticTarget_World();
+			if(AimSlot != -1)
+			{
+				D3DXVECTOR3 OnWorld,OnScreen;
+				int BoneIndexSelector = 0;
+				switch(AimBody)
+				{
+				case 0:
+					BoneIndexSelector = 7.0;
+					break;
+				case 1:
+					BoneIndexSelector = 5;
+					break;
+				}
+				if(GetUserBone(OnWorld,AimSlot,BoneIndexSelector)){
+					if(ADDXW2S(pDevice,OnWorld,OnScreen))
+					{
+						int x = ( GetSystemMetrics( 0 ) / 2);
+						int y = ( GetSystemMetrics( 1 ) / 2);
+						int COLOR = SKYBLUE;
+						Circle (OnScreen.x, OnScreen.y,6,true,COLOR,pDevice);
+						FillRGB(OnScreen.x-10, OnScreen.y, 7, 1,COLOR,pDevice);
+						FillRGB(OnScreen.x+4, OnScreen.y, 7, 1,COLOR,pDevice);
+						FillRGB(OnScreen.x, OnScreen.y-10, 1, 7,COLOR,pDevice);
+						FillRGB(OnScreen.x, OnScreen.y+4, 1, 7,COLOR,pDevice);
+						AimEnable = true;
+						int LocalX = OnScreen.x;
+						int LocalY = OnScreen.y;
+						if(LocalX == ScreenCenterX && LocalY == ScreenCenterY)
+						{ 
+							MouseDeltaX = 0;
+							MouseDeltaY = 0;
+						}
+						else
+						{
+							MouseDeltaX = LocalX - ScreenCenterX;
+							MouseDeltaY = LocalY - ScreenCenterY;
+						}
+					}
+					else
+					{
+						AimEnable = false;
+					}
+				}
+				else
+				{
+					AimEnable = false;
+				}
+			}
+			else
+			{
+				AimEnable = false;
+			}
+		}
+		else
+		{
+			AimEnable = false;
+		}
+	}
+
+if(texRed == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bRed, sizeof(bRed), &texRed);
+	if(texBlue == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bBlue, sizeof(bBlue), &texBlue);
+	if(texGreen == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bGreen, sizeof(bGreen), &texGreen);
+	if(texAqua == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bAqua, sizeof(bAqua), &texAqua);
+	if(texPurple == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bPurple, sizeof(bPurple), &texPurple);
+	if(texWhite == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bWhite, sizeof(bWhite), &texWhite);
+	if(texYellow == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bYellow, sizeof(bYellow), &texYellow);
+	if(texPink == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bPink, sizeof(bPink), &texPink);
+	if(texTurquoise == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bTurquoise, sizeof(bTurquoise), &texTurquoise);
+	if(texOrange == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bOrange, sizeof(bOrange), &texOrange);
+	if(texBlack == NULL) D3DXCreateTextureFromFileInMemory(pDevice, (LPCVOID)&bBlack, sizeof(bBlack), &texBlack);
+	
+	
+	
+/*	if(GetAsyncKeyState(VK_F9)&1)
+	{
+			KillMySelf();
+			Sleep(5);
+			SmokeCall=!SmokeCall;
+			AntiOut=!AntiOut;
+			NoLife=!NoLife;
+			Magnet=!Magnet;
+			BP_Invi=!BP_Invi;
+	}
+
+	if(GetAsyncKeyState(VK_F10)&1)
+	{
+			KillMySelf();
+			SmokeCall=!SmokeCall;
+			WShoot=!WShoot;//
+			Magnet=!Magnet;
+			BP_Invi=!BP_Invi;
+	}*/
+
+
+	/*if(IsBadReadPtr((PDWORD)*(PDWORD)ResultBaseWeapon2, 4) == 0)
+		{
+	if(AntiVote){
+	WritePointer(ResultBasePlayer2 - 8, "\x41\x00\x00\x00", 4, 2, 0x18, 0x1BB);
+	WritePointer(ResultBasePlayer2 - 8, "\x41\x00\x00\x00", 4, 2, 0x18, 0x1BF);
+	}}*/
+	
+	/*	if(Magnet==1)
+	{
+		DWORD Frameon= (DWORD)LoadLibraryA("i3FrameWorkDx.dll");
+			PrivateOnly((void *)(Frameon + ResultMagnet),(int*)(PBYTE)"\x30",1);
+		Sleep(2);
+	}
+	if(Magnet==0)
+	{
+		DWORD Frameoff= (DWORD)LoadLibraryA("i3FrameWorkDx.dll");
+			PrivateOnly((void *)(Frameoff + ResultMagnet),(int*)(PBYTE)"\xC0",1);
+		Sleep(2);
+	}*/
