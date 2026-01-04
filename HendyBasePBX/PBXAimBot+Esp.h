@@ -1,0 +1,496 @@
+//-------------------------------------------------------------------------------------------------------------------------------------------
+bool AimEnable    = false;//
+bool BulletEnable = false;//
+bool bHookedTele  = false;//
+//========================//
+//DWORD TeamColor;          //
+//DWORD GetDeltaX     = 0;  //
+//DWORD GetDeltaY     = 0;  //
+//DWORD OFS_Telekill  = 0;  //
+DWORD BackupEDXTele = 0;  //  
+//========================//
+#define PISSS 3.14159265  //
+//===================================================================================================================//
+HMODULE i3SceneDx_Hook = GetModuleHandle("i3SceneDx.dll");                                                           //
+//===================================================================================================================//
+//D3DVECTOR Player;         //
+//D3DVECTOR HeadPos;        //
+//D3DVECTOR PlayerScaled;   //
+//D3DVECTOR HeadScaled;     // 
+//D3DVECTOR BonePos;        // 
+//D3DVECTOR ScreenPos;      //
+//========================//
+float DeltaX   = 0;       //
+float DeltaY   = 0;       //
+float fX,fY,fZ = 0;       //
+//========================//
+int AimSlot = 0;          //
+//=======================================================================//
+int GetMyCharaIndex()
+{
+DWORD dwI3EXEC	 = (DWORD)GetModuleHandle("Pointblank.exe");
+unsigned long dwBase	= *(DWORD*)(dwI3EXEC + OFS_Player);
+unsigned long dwBase2	= *(DWORD*)(dwI3EXEC + OFS_Player-0x34);
+CTeam *MyTeam = (CTeam*) ((dwBase + OFS_TEAM));
+return MyTeam->iTeam;
+}
+//=======================================================================//
+void *DetourCreate(BYTE *src, const BYTE *dst, const int len)
+{
+	BYTE *jmp;
+	DWORD dwback;
+	DWORD jumpto, newjump;
+	 
+	VirtualProtect(src,len,PAGE_READWRITE,&dwback);
+	
+	if(src[0] == 0xE9)
+	{
+		jmp = (BYTE*)malloc(10);
+		jumpto = (*(DWORD*)(src+1))+((DWORD)src)+5;
+		newjump = (jumpto-(DWORD)(jmp+5));
+		jmp[0] = 0xE9;
+		*(DWORD*)(jmp+1) = newjump;
+		jmp += 5;
+		jmp[0] = 0xE9;
+		*(DWORD*)(jmp+1) = (DWORD)(src-jmp);
+	}else{
+		jmp = (BYTE*)malloc(5+len);
+		memcpy(jmp,src,len);
+		jmp += len;
+		jmp[0] = 0xE9;
+		*(DWORD*)(jmp+1) = (DWORD)(src+len-jmp)-5;
+	}
+	src[0] = 0xE9;
+	*(DWORD*)(src+1) = (DWORD)(dst - src) - 5;
+	
+	for(int i = 5; i < len; i++)
+		src[i] = 0x90;
+	
+	VirtualProtect(src,len,dwback,&dwback);
+	return (jmp-len);
+}
+//=======================================================================================================//
+bool GetUserBone( D3DXVECTOR3 &Out, int Idx, int BoneIdx )
+{
+DWORD dwI3EXEC	 = (DWORD)GetModuleHandle("PointBlank.exe");
+unsigned long dwGameBase = *(DWORD*)(dwI3EXEC + OFS_Health);
+    if ( dwGameBase )
+    {
+        CGameCharaBase* GameBase = (CGameCharaBase*)( *(DWORD*)(dwGameBase + 0x14 + ( 0x4 * Idx ) ) );
+
+        if ( GameBase && GameBase->m_BoneContext )
+        {
+            Out.x = GameBase->m_BoneContext->m_Bone[ BoneIdx ].m_Bone._41;
+            Out.y = GameBase->m_BoneContext->m_Bone[ BoneIdx ].m_Bone._42;
+            Out.z = GameBase->m_BoneContext->m_Bone[ BoneIdx ].m_Bone._43;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+//==========================================================================================================//
+float CalcDistance( D3DXVECTOR3 VecA, D3DXVECTOR3 VecB )
+{
+        return sqrt( ( ( VecA.x - VecB.x ) * ( VecA.x - VecB.x ) ) +
+                 ( ( VecA.y - VecB.y ) * ( VecA.y - VecB.y ) ) +
+                 ( ( VecA.z - VecB.z ) * ( VecA.z - VecB.z ) ) );
+}
+//===========================================================================================================//
+bool IsAlive(int Index)
+{
+DWORD dwI3EXEC	 = (DWORD)GetModuleHandle("Pointblank.exe");
+unsigned long dwBase2	= *(DWORD*)(dwI3EXEC + OFS_Health);
+CHealth		*Health		= (CHealth*) ((dwBase2 + OFS_HEALTH) + Index * 0x20);
+if(Health->CurHP > 0.1f)
+return true;
+return false;
+}
+//============================================================================================================//
+D3DXVECTOR3 GetUserVector( int Index )
+{
+	DWORD ADR_PLAYER = *(DWORD*)(OFS_Player2);
+	DWORD OldProtect;
+	DWORD pCalculate = *(DWORD*)(ADR_PLAYER + 4 * Index + OFS_PLAYER );
+	VirtualProtect ( (LPVOID)(pCalculate), sizeof (pCalculate), PAGE_EXECUTE_READWRITE, &OldProtect );
+	CPlayers	*Players	= (CPlayers*)(pCalculate + 0x64 );
+	VirtualProtect ( (LPVOID)(pCalculate), sizeof (pCalculate), OldProtect, &OldProtect );
+	return Players->pos;
+} 
+//==============================================================================================================//
+int AutomaticTarget_World()
+{
+int Result = -1;
+float NearDistance = 1000.0f;
+int MyTeam = DxESP->GetTeam(GetMyCharaIndex());
+if(!IsAlive(GetMyCharaIndex()))return Result;
+for(int i = 0; i<=16; i++)
+{
+int TargetTeam = DxESP->GetTeam(i);
+if(TargetTeam == MyTeam)continue;
+if(TargetTeam == 0)continue;
+	if ( IsAlive(i) )
+{
+		  D3DXVECTOR3 Head;
+		if ( GetMyCharaIndex( ) %2 != i % 2 && GetUserBone( Head, i, 7 ) )
+            {
+		if(CalcDistance(GetUserVector(GetMyCharaIndex()),GetUserVector(i)) < NearDistance)
+		{
+			NearDistance = CalcDistance(GetUserVector(GetMyCharaIndex()),GetUserVector(i));
+			Result = i;
+		}
+		}
+}
+}
+return Result;
+}
+//===============================================================================================================//
+_declspec(naked)void i3CollideeLine_SetStart()
+{
+_asm{
+		cmp [BulletEnable],0
+		je Skip
+		mov eax,dword ptr ss:[esp+0x4]
+		mov [BackupEDXTele],edx
+		mov edx,[fX]
+		mov [eax+0],edx
+		mov edx,[fY]
+		mov [eax+4],edx
+		mov edx,[fZ]
+		mov [eax+8],edx
+		mov edx,[BackupEDXTele]
+Skip:
+		mov eax,dword ptr ss:[esp+0x4]
+		fld dword ptr ds:[eax]
+		fstp dword ptr ds:[ecx+0x14]
+		fld dword ptr ds:[eax+0x4]
+		fstp dword ptr ds:[ecx+0x18]
+		fld dword ptr ds:[eax+0x8]
+		fstp dword ptr ds:[ecx+0x1C]
+		retn 0x4
+	}
+}
+_declspec(naked)void i3CollideeLine_SetEnd()
+{
+_asm{
+		
+		cmp [BulletEnable],0
+		je Skip
+		mov eax,dword ptr ss:[esp+0x4]
+		mov [BackupEDXTele],edx
+		mov edx,[fX]
+		mov [eax+0],edx
+		mov edx,[fY]
+		mov [eax+4],edx
+		mov edx,[fZ]
+		mov [eax+8],edx
+		mov edx,[BackupEDXTele]
+Skip:
+        mov eax,dword ptr ss:[esp+0x4]
+        fld dword ptr ds:[eax]
+        fstp dword ptr ds:[ecx+0x18]
+        fld dword ptr ds:[eax+0x4]
+        fstp dword ptr ds:[ecx+0x1C]
+        fld dword ptr ds:[eax+0x8]
+        fstp dword ptr ds:[ecx+0x20]
+        fld dword ptr ds:[ecx+0x18]
+        fsub dword ptr ds:[ecx+0x0C]
+        fstp dword ptr ds:[ecx+0x24]
+        fld dword ptr ds:[ecx+0x1C]
+        fsub dword ptr ds:[ecx+0x10]
+        fstp dword ptr ds:[ecx+0x28]
+        fld dword ptr ds:[ecx+0x20]
+        fsub dword ptr ds:[ecx+0x14]
+        fstp dword ptr ds:[ecx+0x2C]
+        retn 0x4                             
+		
+		
+}
+}
+
+//==================================================================================
+void DoTelekill(LPDIRECT3DDEVICE9 pDevice)
+{
+if(bHookedTele)return;
+	DetourCreate((PBYTE)i3SceneDx_Hook + 0x10B40,(PBYTE)i3CollideeLine_SetEnd,5);
+	bHookedTele = true;
+}
+void DoAimBullet(LPDIRECT3DDEVICE9 pDevice){
+DoTelekill(pDevice);
+if(cItem.Accuracy  == 1)//BulletMode
+{
+int AimSlot = AutomaticTarget_World();
+if(AimSlot != -1)
+{
+D3DXVECTOR3 OnWorld,OnScreen;
+int BoneIndexSelector = 0;
+switch(cItem.AimBody)
+{
+	case 0:
+		BoneIndexSelector = 7;
+		break;
+	case 1:
+		BoneIndexSelector = 5;
+		break;
+}
+if(GetUserBone(OnWorld,AimSlot,BoneIndexSelector)){
+BulletEnable = true;
+fX = OnWorld.x;
+fY = OnWorld.y + 0.1f;
+fZ = OnWorld.z;
+//================= AUTOMATIC SCREEN =========================//
+if(DRW2S(pDevice,OnWorld,OnScreen))
+{
+DxESP->DrawLine(683,384,OnScreen.x,OnScreen.y,1,RED);
+}
+}
+//=================================================//
+else
+{
+	BulletEnable = false;
+}
+}
+else
+{
+	BulletEnable = false;
+}
+}
+if(cItem.Accuracy == 0 && !cItem.Accuracy)
+{
+	BulletEnable = false;
+}
+}
+//void DrawCircle(D3DXVECTOR2 Pos,float Radius,int Sides,D3DCOLOR Color,IDirect3DDevice9* pDevice)
+//{
+//D3DXVECTOR2 Line[128];
+//float Step = D3DX_PI * 2.0 / Sides;
+//int Count = 0;
+//for (float a=0; a < D3DX_PI*2.0; a += Step) {
+//float X1 = Radius * cos(a) + Pos.x;
+//float Y1 = Radius * sin(a) + Pos.y;
+//float X2 = Radius * cos(a+Step) + Pos.x;
+//float Y2 = Radius * sin(a+Step) + Pos.y;
+//Line[Count].x = X1;
+//Line[Count].y = Y1;
+//Line[Count+1].x = X2;
+//Line[Count+1].y = Y2;
+//Count += 2;
+//}
+//bool antianalias = pLine->GetAntialias();
+//bool gllines = pLine->GetGLLines();
+//float width = pLine->GetWidth();
+//pLine->Begin();
+//pLine->Draw(Line,Count,Color);
+//pLine->End();
+//pLine->SetAntialias(antianalias);
+//pLine->SetGLLines(gllines);
+//pLine->SetWidth(width);
+//return;
+//}
+//=================================================================================================================================
+void BoneESP (LPDIRECT3DDEVICE9 pDevice)
+{
+DWORD dwI3EXEC = (DWORD)GetModuleHandle("PointBlank.exe");
+unsigned long dwBase = *(DWORD*)(dwI3EXEC + OFS_Player);
+unsigned long A_CGameCharaManager = *(DWORD*)(dwI3EXEC + OFS_Health);//ResultBaseHealth
+CTeam *pTeam = ((CTeam*)(dwBase + OFS_TEAM));
+CGameCharaBase* m_CharaBase = NULL;
+int MyTeam = DxESP->GetTeam(pTeam->iTeam);
+for (int i = 0; i<=MAXPLAYERS;i++)
+{
+if(A_CGameCharaManager !=0){
+m_CharaBase = (CGameCharaBase*)((*(DWORD*)(A_CGameCharaManager + 0x14 + 0x4*i)));
+int iTeam = DxESP->GetTeam(i);
+if (iTeam == MyTeam)continue;
+if (iTeam == 1){ TeamColor = SKYBLUE;
+}
+else if (iTeam == 2){ TeamColor = GREEN;
+}
+else{ continue;
+}
+if(m_CharaBase!=0)
+if(m_CharaBase->m_BoneContext!=0)
+{
+if(cItem.ESPBone == 1)
+{
+DrawSkeleton(m_CharaBase, TeamColor, pDevice);
+}
+}
+}
+}
+}
+//=================================================================================================================================
+bool ADDXW2S(LPDIRECT3DDEVICE9 pDevice, D3DVECTOR Player,D3DVECTOR &PlayerScaled)
+{
+D3DXVECTOR3 PlayerPos(Player.x,Player.y,Player.z);
+D3DXMATRIX identity;
+D3DXVECTOR3 vScreen;
+pDevice->GetViewport(&Viewport);
+Viewport.X = Viewport.Y = 0;
+Viewport.MinZ = 0;
+Viewport.MaxZ = 1;
+D3DXVec3Project(&vScreen, &PlayerPos, &Viewport, &pRC->pRenderData->ProjMatrix, &pRC->pRenderData->ViewMatrix, &pRC->pRenderData->World);
+
+if (vScreen.z < 1.0f && vScreen.x > 0.0f && vScreen.y > 0.0f && vScreen.x < Viewport.Width && vScreen.y < Viewport.Height)
+{
+PlayerScaled.x = vScreen.x;
+PlayerScaled.y = vScreen.y ;
+PlayerScaled.z = vScreen.z;
+
+return true;
+}
+return false;
+}
+
+void PrintText(char pString[], int x, int y, D3DCOLOR col, ID3DXFont *font)
+{
+RECT FontRect = { x, y, x+500, y+50 };
+font->DrawText( NULL, pString, -1, &FontRect, DT_LEFT | DT_WORDBREAK, col);
+}
+void DrawCircle(D3DXVECTOR2 Pos,float Radius,int Sides,D3DCOLOR Color,IDirect3DDevice9* pDevice)
+{
+D3DXVECTOR2 Line[128];
+float Step = D3DX_PI * 2.0 / Sides;
+int Count = 0;
+for (float a=0; a < D3DX_PI*2.0; a += Step) {
+float X1 = Radius * cos(a) + Pos.x;
+float Y1 = Radius * sin(a) + Pos.y;
+float X2 = Radius * cos(a+Step) + Pos.x;
+float Y2 = Radius * sin(a+Step) + Pos.y;
+Line[Count].x = X1;
+Line[Count].y = Y1;
+Line[Count+1].x = X2;
+Line[Count+1].y = Y2;
+Count += 2;
+}
+bool antianalias = pLine->GetAntialias();
+bool gllines = pLine->GetGLLines();
+float width = pLine->GetWidth();
+pLine->Begin();
+pLine->Draw(Line,Count,Color);
+pLine->End();
+pLine->SetAntialias(antianalias);
+pLine->SetGLLines(gllines);
+pLine->SetWidth(width);
+return;
+}
+//=================================================================================================================================
+void ADDXESP(LPDIRECT3DDEVICE9 pDevice)
+{
+DWORD dwI3EXEC = (DWORD)GetModuleHandle("PointBlank.exe");
+unsigned long dwBase = *(DWORD*)(dwI3EXEC + OFS_Player);
+unsigned long dwBase2 = *(DWORD*)(dwI3EXEC + OFS_Player-0x34);
+CTeam *pTeam = ((CTeam*)(dwBase + OFS_TEAM));
+CPlayers *pNearEnt = NULL;
+float NearTargetX = 0.0f;
+float NearTargetY = 0.0f;
+float DisX = 0.0f;
+float DisY = 0.0f;
+CNames *pTarget = NULL;
+CHealth *iTarget = NULL;
+char *dis = new char[33];
+char *hp = new char[33];
+char *bone = new char[33];
+char *state = new char[33];
+float ScreenCenterX = (Viewport.Width /2.0f);
+float ScreenCenterY = (Viewport.Height /2.0f);
+float ScreenBottomY = (Viewport.Height);
+int MyTeam = DxESP->GetTeam(pTeam->iTeam);
+if(*(PBYTE)OFS_Ammo2 > 1.)
+{
+for (int i = 0; i<=MAXPLAYERS;i++)
+{
+if (dwBase !=0)
+{
+CNames *pNames = (CNames*)((dwBase + OFS_NAMES) + i * NAMESIZE);
+CRank *pRank = (CRank*)((dwBase + OFS_RANK) + i * RANKSIZE);
+CRank *pRespawn = (CRank*)((dwBase + OFS_RANK+0x1) + pTeam->iTeam * RANKSIZE);
+CHealth *pHealth = (CHealth*)((dwBase2 + OFS_HEALTH) + i * HPSIZE);
+CHealth *mHealth = (CHealth*)((dwBase2 + OFS_HEALTH) + pTeam->iTeam * HPSIZE);
+DWORD ADR_PLAYER = *(DWORD*)(OFS_Player2);
+DWORD OldProtect;
+DWORD pCalculate = *(DWORD*)(ADR_PLAYER + 0x4 * i + OFS_PLAYER );
+DWORD pCalculate2 = *(DWORD*)(ADR_PLAYER + 0x4 * pTeam->iTeam + OFS_PLAYER );
+VirtualProtect ( (LPVOID)(pCalculate), sizeof (pCalculate), PAGE_EXECUTE_READWRITE, &OldProtect );
+VirtualProtect ( (LPVOID)(pCalculate2), sizeof (pCalculate2), PAGE_EXECUTE_READWRITE, &OldProtect );
+CPlayers *pPlayer = (CPlayers*)(pCalculate + 0x64 );
+CPlayers *pLocal = (CPlayers*)(pCalculate2 + 0x64 );
+VirtualProtect ( (LPVOID)(pCalculate), sizeof (pCalculate), OldProtect, &OldProtect );
+VirtualProtect ( (LPVOID)(pCalculate2), sizeof (pCalculate2), OldProtect, &OldProtect );
+CNick *pHacker = (CNick*) ((dwBase + OFS_Hacker) + i * 0x01);
+CNick *pHacker2 = (CNick*) ((dwBase + OFS_Hacker2) + i * 0x01);
+SHOWNAMEPI *pShowPI = (SHOWNAMEPI*)((dwBase + OFS_Hacker) + i*IDSIZE);
+SHOWNAMEPI *pShowPI1 = (SHOWNAMEPI*)((dwBase + OFS_Hacker2) + i*IDSIZE);
+int iTeam = DxESP->GetTeam(i);
+Player.x = pPlayer->pos.x;
+Player.y = pPlayer->pos.y;
+Player.z = pPlayer->pos.z;
+HeadPos.x = pPlayer->pos.x;
+HeadPos.y = 1.6f + pPlayer->pos.y;
+HeadPos.z = pPlayer->pos.z;
+D3DXVECTOR3 MyDistance = pLocal->pos - pPlayer->pos;
+float MyaDistance = D3DXVec3Length(&MyDistance );
+float Nearest = (float) INT_MAX;
+float PosX = 0.0f;
+float PosY = 0.0f;
+if (iTeam == MyTeam)continue;
+if (iTeam == 1)
+{
+TeamColor = RED;
+}
+else if (iTeam == 2)
+{
+TeamColor = LIGHTBLUE;
+}
+else{ continue;
+}
+if (DxESP->ADDXW2S(pDevice,Player,PlayerScaled))
+{
+if (pHealth->CurHP > 1)
+{
+if(cItem.ESPBox)
+{
+DxESP->DrawBoxESP((float)PlayerScaled.x-(5000/MyaDistance)/30,(float)PlayerScaled.y-(35000/MyaDistance)/45, 50000/MyaDistance/6*2/40,50000/MyaDistance/3*2/40, TeamColor, pDevice);
+}
+}
+}
+D3DXVECTOR3 OnWorld,OnScreen;
+if(GetUserBone(OnWorld,i,0)){
+if (DxESP->ADDXW2S(pDevice,OnWorld,OnScreen))
+{
+if (pHealth->CurHP > 1)
+{
+}
+}
+}
+if(GetUserBone(OnWorld,i,7))
+{
+if (DxESP->ADDXW2S(pDevice,OnWorld,OnScreen))
+{
+if (pHealth->CurHP > 1)
+{
+if (cItem.ESPLine)
+{
+DxESP->DrawLine((float)ScreenCenterX,(float)ScreenBottomY,(float)OnScreen.x,(float)OnScreen.y,1,WHITE);
+}
+if (cItem.ESPRank)
+{
+DxESP->PrintText(eRanks[pRank->iRank],(float)OnScreen.x-15,(float)OnScreen.y-30,PURPLE,fName);
+}
+if (cItem.ESPHealth)
+{
+DxESP->Healthbarnew(pDevice,(int)OnScreen.x-5,(int)OnScreen.y-10,pHealth->CurHP);
+}
+if (cItem.ESPHead)
+{
+DxESP->FillRGB((float)OnScreen.x, (float)OnScreen.y, 3, 3,YELLOW, pDevice );
+}
+}
+}
+}
+//-----------------------------------------------------------------------//
+}
+}
+}
+}
