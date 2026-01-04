@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="- Main Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="- Main Form">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="- Main Protect">
+      <UniqueIdentifier>{9813a16e-a765-4c8e-9be6-e0502cd74bc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="- Main Source Code Item">
+      <UniqueIdentifier>{a612fc44-f04a-4722-b1d8-531f49e3a7d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="- Main Replace Fitur">
+      <UniqueIdentifier>{6e1eee73-70d5-47de-acdb-1afb063775b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="- Main Get Fiture">
+      <UniqueIdentifier>{51192692-b9ca-4d0b-92da-953833f159bf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>- Main Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Form1.cpp">
+      <Filter>- Main Form</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Form1.h">
+      <Filter>- Main Form</Filter>
+    </ClInclude>
+    <ClInclude Include="Hack.h">
+      <Filter>- Main Form</Filter>
+    </ClInclude>
+    <ClInclude Include="Inet.h">
+      <Filter>- Main Form</Filter>
+    </ClInclude>
+    <ClInclude Include="HSDN Protect.h">
+      <Filter>- Main Protect</Filter>
+    </ClInclude>
+    <ClInclude Include="HWID Protect.h">
+      <Filter>- Main Protect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source Code Custom Leader.h">
+      <Filter>- Main Source Code Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Source Code Fake Name Real.h">
+      <Filter>- Main Source Code Item</Filter>
+    </ClInclude>
+    <ClInclude Include="HeroList.h">
+      <Filter>- Main Replace Fitur</Filter>
+    </ClInclude>
+    <ClInclude Include="Replace.h">
+      <Filter>- Main Replace Fitur</Filter>
+    </ClInclude>
+    <ClInclude Include="ReplaceCode.h">
+      <Filter>- Main Replace Fitur</Filter>
+    </ClInclude>
+    <ClInclude Include="ShopItem.h">
+      <Filter>- Main Replace Fitur</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
